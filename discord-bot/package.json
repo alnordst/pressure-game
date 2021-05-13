@@ -1,0 +1,19 @@
+{
+  "name": "pressure-game-discord-bot",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node -r dotenv/config src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "canvas": "^2.7.0",
+    "discord.js": "^12.5.3",
+    "gifencoder": "^2.0.1"
+  },
+  "devDependencies": {
+    "dotenv": "^9.0.1"
+  }
+}
