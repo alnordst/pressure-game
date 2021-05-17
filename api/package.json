@@ -9,10 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "knex": "^0.95.5",
-    "mysql2": "^2.2.5"
+    "mysql2": "^2.2.5",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "dotenv": "^9.0.2"
