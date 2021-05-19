@@ -164,7 +164,7 @@ app.post('/move', mustHave(['game', 'from', 'to']), async (req, res) => {
   let games = await knex('games_vw').where({'id':req.body.game})
   if(games.length){
     let game = games[0]
-    if(['red', 'blue'].some(c => req.player == game[`${c}_player_id`] && game.to_move == c)) {
+    if(['red', 'blue'].some(c => req.player == game[`${c}_player_id`] && game.to_move == c && !game.is_complete)) {
       let board = Board.fromGame(game)
       let valid = board.move(req.body.from, req.body.to, game.to_move)
       if(valid) {
