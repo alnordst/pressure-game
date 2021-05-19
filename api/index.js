@@ -18,6 +18,9 @@ app.disable('x-powered-by')
 const Board = require('./util/Board.js')
 
 // --- gets ---
+app.get('/', (req, res) => {
+  res.sendStatus(200)
+})
 app.get('/players', async (req, res) => {
   let players = await knex('players_vw')
   res.status(200).send(players)
