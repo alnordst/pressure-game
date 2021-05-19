@@ -251,15 +251,15 @@ app.post('/offer-draw', mustHave(['game']), async (req, res) => {
     res.sendStatus(404)
 })
 
-app.post('/submit-map', mustHave(['name', 'map']), async (req, res) => {
+app.post('/submit-map', mustHave(['map']), async (req, res) => {
   try{
-    let duplicates = await knex('maps').where({name:req.body.name})
+    let duplicates = await knex('maps').where({name:req.body.map.name})
     if(duplicates.length)
       res.status(400).send('There is already a map with that name.')
     else {
       Board.fromGame(req.body.map, false)
       await knex('maps').insert({
-        'name': req.body.name,
+        'name': req.body.map.name,
         'ranks': req.body.map.ranks,
         'files': req.body.map.files,
         'terrain': req.body.map.terrain,
