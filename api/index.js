@@ -50,7 +50,7 @@ app.get('/maps', async (req, res) => {
 app.get('/map/:name', async (req, res) => {
   let maps = await knex('maps_vw').where({'name':req.params.name})
   if(maps.length) {
-    let board = Board.fromFame(maps[0])
+    let board = Board.fromGame(maps[0])
     maps[0].board = board.toObj
     res.status(200).send(maps[0])
   } else
@@ -287,6 +287,21 @@ app.post('/update-settings', mustHave(['settings']), async (req, res) => {
     console.log(err)
     res.sendStatus(400)
   }
+})
+
+app.post('/register-webhook', mustHave(['url']), async (req, res) => {
+  let webhookId
+  let existingWebhooks = await knex('webhooks').where({url:req.body.url})
+  if(existingWebhooks.length) {
+    webhookId = existingWebhooks[0].id
+  } else {
+    webhookId = await knex('webhooks').insert({url:req.body.url})
+  }
+  await knex('webhook_registrations').insert({
+    player_id: req.player,
+    webhook_id: webhookId
+  })
+  res.sendStatus(200)
 })
 
 app.listen(process.env.PORT, () => {
