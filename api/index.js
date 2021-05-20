@@ -1,10 +1,10 @@
 const knex = require('knex')({
   client: 'mysql2',
   connection: {
-    host: process.env.HOST,
-    database: process.env.DATABASE,
-    user: process.env.USER,
-    password: process.env.PASSWORD
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
   }
 })
 const axios = require('axios')
@@ -310,3 +310,7 @@ app.post('/register-webhook', mustHave(['url']), async (req, res) => {
 app.listen(process.env.PORT, () => {
   console.log(`Listening on port ${process.env.PORT}.`)
 })
+
+process.on('SIGINT', function() {
+  process.exit();
+});
