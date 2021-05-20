@@ -51,7 +51,7 @@ app.get('/maps', async (req, res) => {
   res.status(200).send(maps)
 })
 app.get('/map/:name', async (req, res) => {
-  let maps = await knex('maps_vw').where({'name':req.params.name})
+  let maps = await knex('maps_vw').where({'map_name':req.params.name})
   if(maps.length) {
     let board = Board.fromGame(maps[0])
     maps[0].board = board.toObj
