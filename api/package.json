@@ -1,7 +1,11 @@
 {
   "name": "pressure-game-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "backend api for pressure game",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alnordst/pressure-game.git"
+  },
   "main": "index.js",
   "scripts": {
     "start": "node -r dotenv/config index.js"
