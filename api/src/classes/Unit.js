@@ -4,6 +4,7 @@ class Unit {
     this.team = team
     this.offenseModifier = 0
     this.defenseModifier = 0
+    this.threatens = []
   }
 
   static fromChar(char) {
@@ -29,7 +30,18 @@ class Unit {
   get toObj() {
     return {
       type: this.type,
-      team: this.team
+      team: this.team,
+      threatens: this.threatens
+    }
+  }
+
+  threaten(square) {
+    return {
+      from: (thisSquare) => {
+        this.threatens.push(square.heading)
+        square.threat[this.team] += this.offense
+        square.threatenedBy[this.team].push(thisSquare.heading)
+      }
     }
   }
 }
@@ -47,7 +59,7 @@ class ArtilleryUnit extends Unit {
 
   assignThreat(thisSquare, getter) {
     getter({headings:[[0,2],[0,3],[1,2],[2,1]]}).forEach(square => {
-      square.threat[this.team] += this.offense
+      this.threaten(square).from(thisSquare)
     })
   }
 
@@ -74,7 +86,7 @@ class CommandUnit extends Unit {
 
   assignThreat(thisSquare, getter) {
     getter({headings:[[0,1], [1,1]]}).forEach(square => {
-      square.threat[this.team] += this.offense
+      this.threaten(square).from(thisSquare)
     })
     getter({headings:[[0,1]]}).forEach(square => {
       if(square.unit && square.unit.team == this.team)
@@ -104,7 +116,7 @@ class InfantryUnit extends Unit {
 
   assignThreat(thisSquare, getter) {
     getter({headings:[[0,1], [1,1]]}).forEach(square => {
-      square.threat[this.team] += this.offense
+      this.threaten(square).from(thisSquare)
     })
   }
 
@@ -149,7 +161,7 @@ class SniperUnit extends Unit {
       inclusive: true
     }).forEach(square => {
       if(square.terrain.passable)
-        square.threat[this.team] += this.offense
+        this.threaten(square).from(thisSquare)
     })
   }
 
@@ -189,7 +201,7 @@ class TankUnit extends Unit {
       test: square => square.isPassable || square.isCapturable(this.team),
       inclusive: false
     }).forEach(square => {
-      square.threat[this.team] += this.offense
+      this.threaten(square).from(thisSquare)
     })
   }
 

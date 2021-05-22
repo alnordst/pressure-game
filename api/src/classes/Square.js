@@ -11,6 +11,10 @@ class Square {
       blue: 0
     },
     this.availableMoves = []
+    this.threatenedBy = {
+      red: [],
+      blue: []
+    }
   }
 
   static fromChar(terrain, unit, heading) {
@@ -47,7 +51,8 @@ class Square {
       heading: this.heading,
       threat: this.threat,
       defense: this.isEmpty ? null : this.unit.defense + this.terrain.defenseModifier,
-      availableMoves: this.availableMoves
+      availableMoves: this.availableMoves,
+      threatenedBy: this.threatenedBy
     }
   }
 }
