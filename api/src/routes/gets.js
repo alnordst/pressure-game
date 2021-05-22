@@ -15,9 +15,9 @@ router
   })
   
   .get('/player/:id', async (req, res) => {
-    let players = await knex('players_vw').where({'id':req.params.id})
-    if(players.length)
-      res.status(200).send(players[0])
+    let player = await knex('players_vw').first().where({id: req.params.id})
+    if(player)
+      res.status(200).send(player)
     else
       res.sendStatus(404)
   })

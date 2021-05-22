@@ -3,16 +3,14 @@ const router = express.Router()
 const knex = require('../db')
 const Board = require('../classes/Board')
 const mustHave = require('../middleware/mustHave')
+const { pick } = require('../util')
 
 
 router
 
   .post('/find-game', async (req, res) => {
-    let options = ['map', 'password', 'strict'].reduce((acc, field) => {
-      if(field in req.body)
-        acc[field] = req.body[field]
-      return acc
-    }, {})
+    let options = pick('map', 'password', 'strict').from(req.body)
+
 
     let existingChallenges = await knex('challenges').where(options)
 
