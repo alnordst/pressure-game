@@ -1,8 +1,7 @@
 CREATE TABLE players (
   id INT PRIMARY KEY AUTO_INCREMENT,
   discord_id VARCHAR(20) NOT NULL,
-  username VARCHAR(50) DEFAULT NULL,
-  discord_notifications BOOL NOT NULL DEFAULT 1
+  username VARCHAR(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE maps (
@@ -94,10 +93,7 @@ CREATE TABLE webhook_registrations (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE OR REPLACE VIEW players_vw AS
-  SELECT
-    id,
-    discord_id,
-    username
+  SELECT *
   FROM players;
 
 CREATE OR REPLACE VIEW maps_vw AS

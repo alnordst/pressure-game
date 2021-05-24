@@ -3,27 +3,26 @@ const router = express.Router()
 const knex = require('../db')
 const Board = require('../classes/Board')
 const mustHave = require('../middleware/mustHave')
-const { pick } = require('../util')
+const { pick, webhooks } = require('../util')
 
 
 router
 
   .post('/find-game', async (req, res) => {
     let options = pick('map', 'password', 'strict').from(req.body)
-
-
     let existingChallenges = await knex('challenges').where(options)
 
     if(existingChallenges.length) {
-      if(existingChallenges.some(challenge => challenge.player_id == req.player))
+      let validChallenge = existingChallenges.find(challenge => challenge.player_id != req.player)
+      if(!validChallenge)
         res.status(400).send('Duplicate challenge')
       else
         await knex.transaction(async trx => {
-          await trx('challenges').where({id:existingChallenges[0].id}).del()
-          let mapWhere = existingChallenges[0].map_id ? {id:existingChallenges[0].map_id} : {}
+          await trx('challenges').where({id:validChallenge.id}).del()
+          let mapWhere = validChallenge.map_id ? {id:validChallenge.map_id} : {}
           let map = await trx('maps').orderByRaw('rand()').first().where(mapWhere)
           let gameId = await trx('games').insert({
-            red_player_id: existingChallenges[0].player_id,
+            red_player_id: validChallenge.player_id,
             blue_player_id: req.player,
             map_id: map.id,
             strict: options.strict
@@ -36,6 +35,11 @@ router
           let game = await trx('games_vw').where({id:gameId}).first()
           let board = Board.fromGame(game)
           game.board = board.toObj
+          await webhooks({
+            players: [validChallenge.player_id],
+            reason: 'game-start',
+            data: game
+          })
           res.status(200).send(game)
         })
     } else {
@@ -62,6 +66,11 @@ router
           })
           game = await knex('games_vw').first().where({'id':req.body.game})
           game.board = board.toObj
+          await webhooks({ // need to check if game is over
+            players: [game.red_player_id, game.blue_player_id].filter(id => id != req.player),
+            reason: 'your-turn',
+            data: game
+          })
           res.status(200).send(game)
         } else
           res.status(400).send('Invalid move.')
@@ -84,6 +93,11 @@ router
         game = await knex('games_vw').first().where({'id':req.body.game})
         let board = Board.fromGame(game)
         game.board = board.toObj
+        await webhooks({
+          players: [game.red_player_id, game.blue_player_id].filter(id => id != req.player),
+          reason: 'your-turn',
+          data: game
+        })
         res.status(200).send(game)
       }
     } else
@@ -94,6 +108,8 @@ router
     let games = await knex('games_vw').where({'id':req.body.game})
     if(games.length) {
       let game = games[0]
+      let board = Board.fromGame(game)
+      game.board = board.toObj
       if(!['red', 'blue'].some(c => req.player == game[`${c}_player_id`]))
         res.sendStatus(401)
       else if(game.is_complete)
@@ -103,7 +119,12 @@ router
           'is_complete': 1,
           'winner': req.player == game.red_player_id ? 'blue' : 'red'
         })
-        res.sendStatus(200)
+        await webhooks({
+          players: [game.red_player_id, game.blue_player_id].filter(id => id != req.player),
+          reason: 'game-end',
+          data: game
+        })
+        res.status(200).send(game)
       }
     } else
       res.sendStatus(404)
@@ -113,6 +134,8 @@ router
     let games = await knex('games_vw').where({'id':req.body.game})
     if(games.length) {
       let game = games[0]
+      let board = Board.fromGame(game)
+      game.board = board.toObj
       if(!['red', 'blue'].some(c => req.player == game[`${c}_player_id`]))
         res.sendStatus(401)
       else if(game.is_complete)
@@ -124,12 +147,22 @@ router
             game_id: req.body.game,
             player_id: req.player
           })
+          await webhooks({
+            players: [game.red_player_id, game.blue_player_id].filter(id => id != req.player),
+            reason: 'draw-offer',
+            data: game
+          })
           res.sendStatus(204)
         } else if(offers.find(offer => offer.player_id != req.player)) {
           await knex('games').update({
             is_complete: 1
           })
-          res.sendStatus(200)
+          await webhooks({
+            players: [game.red_player_id, game.blue_player_id].filter(id => id != req.player),
+            reason: 'game-end',
+            data: game
+          })
+          res.status(200).send(game)
         } else {
           res.sendStatus(400)
         }
