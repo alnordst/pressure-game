@@ -198,10 +198,11 @@ class TankUnit extends Unit {
     getter({
       headings:[[0,1]],
       repeat: Infinity,
-      test: square => square.isPassable || square.isCapturable(this.team),
-      inclusive: false
+      test: square => square.isPassable,
+      inclusive: true
     }).forEach(square => {
-      this.threaten(square).from(thisSquare)
+      if(square.terrain.passable)
+        this.threaten(square).from(thisSquare)
     })
   }
 
@@ -209,9 +210,11 @@ class TankUnit extends Unit {
     return getter({
       headings:[[0,1]],
       repeat: Infinity,
-      test: square => square.isPassable || square.isCapturable(this.team),
-      inclusive: false
-    }).map(square => square.heading)
+      test: square => square.isPassable,
+      inclusive: true
+    })
+    .filter(square => square.isPassable || square.isCapturable(this.team))
+    .map(square => square.heading)
   }
 }
 
