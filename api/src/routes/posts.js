@@ -193,22 +193,6 @@ router
     }
   })
 
-  .post('/update-settings', mustHave(['settings']), async (req, res) => {
-    try{
-      let settings = ['discord_notifications'].reduce((acc, field) => {
-        if(field in req.body.settings)
-          acc[field] = req.body.settings[field]
-        return acc
-      }, {})
-      console.log('settings', settings, req.body.settings)
-      await knex('players').where({'id':req.player}).update(settings)
-      res.sendStatus(200)
-    } catch (err) {
-      console.log(err)
-      res.sendStatus(400)
-    }
-  })
-
   .post('/register-webhook', mustHave(['url']), async (req, res) => {
     let webhookId
     let existingWebhooks = await knex('webhooks').where({url:req.body.url})
