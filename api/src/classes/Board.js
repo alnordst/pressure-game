@@ -1,87 +1,84 @@
+const Address = require('./Address')
 const Square = require('./Square')
 
-let rotations = ([x, y]) => [ [x, y], [-x, -y], [-y, x], [y, -x] ]
-
 class Board {
-  constructor(ranks, files, terrain, units, calculate=true) {
-    let data = []
-    for(let i=0; i<ranks; i++){
-      let row = []
-      for(let j=0; j<files; j++) {
-        let terrainChar = terrain[i*files+j]
-        let unitChar = units[i*files+j]
-        let heading = `${String.fromCharCode('a'.charCodeAt(0)+j)}${ranks-i}`
-        row.push(Square.fromChar(terrainChar, unitChar, heading))
+  constructor(data, initialize=true) {
+    this.ranks = data.length
+    this.files = data[0].length
+    this.dataObj = {}
+    this.dataMatrix = data.map((row, rowIndex) => {
+      row.map((square, colIndex) => {
+        let address = new Address(this.ranks - rowIndex, colIndex + 1)
+        let squareObj = new Square(this, address, square)
+        dataObj[address.toString()] = squareObj
+        return squareObj
+      })
+    })
+    if(initialize)
+      this.assignThreat()
+  }
+
+  toObj(slim=false) {
+    return {
+      ranks: this.ranks,
+      files: this.files,
+      data: this.dataMatrix.map(row => {
+        return row.map(square => {
+          return square.toObj(slim)
+        })
+      })
+    }
+  }
+
+  get squares() { return Object.values(dataObj) }
+  get isResolved() { return squares.every(square => square.isResolved) }
+
+  squareAt(address) {
+    return this.dataObj[address.toString()]
+  }
+
+  neighborsOf(square, {headings, iterations=1, test=()=>true, units=false,
+  rotate=false, inclusive=false}) {
+    let fullHeadings = rotate ? Address.rotate(headings) : headings
+    let squares = fullHeadings.reduce((squares, heading) => {
+      for(let i=1; i<=iterations; i++) {
+        let address = square.address.neighborAt(heading, i)
+        let destination = this.squareAt(address)
+        if(!destination)
+          break
+        let passed = test(destination)
+        if(passed || inclusive)
+          squares.push(destination)
+        if(!passed)
+          break
       }
-      data.push(row)
-    }
-
-    //todo validate, check for win, etc
-
-    if(calculate){
-      let getterGen = defaultOrigin => ({origin=defaultOrigin, headings, repeat=1, test=()=>true, inclusive=false}) => {
-        let i = ranks - parseInt(origin.slice(1))
-        let j = origin.slice(0,1).charCodeAt(0)-'a'.charCodeAt(0)
-        return headings.reduce((squares, heading) => {
-          rotations(heading).forEach((heading) => {
-            for(let k=1; k<=repeat; k++) {
-              let x = i + k*heading[0]
-              let y = j + k*heading[1]
-              let square
-              try {
-                square = data[x][y]
-              } catch(err){
-                break // we've gone off the board
-              }
-              if(!square)
-                break // also gone off the board
-              let passed = test(square)
-              if(passed || inclusive)
-                squares.push(square)
-              if(!passed)
-                break
-            }
-          })
-          return squares
-        }, [])
-      }
-
-      data.forEach(row => row.forEach(square => square.assignThreat(getterGen)))
-      data.forEach(row => row.forEach(square => square.getAvailableMoves(getterGen)))
-    }
-    this.data = data
+      return squares
+    }, [])
+    if(units)
+      return squares
+        .map(square => square.unit)
+        .filter(unit => unit)
+    else
+      return squares
   }
 
-  static fromMapAndState({ranks, files, terrain}, {units}, calculate) {
-    return new Board(ranks, files, terrain, units, calculate)
+  assignThreat() {
+    squares.forEach(square => square.assignThreat())
   }
 
-  static fromGame({ranks, files, terrain, units}, calculate) {
-    return new Board(ranks, files, terrain, units, calculate)
+  move() {
+    squares.forEach(square => square.beforeMove())
+    squares.forEach(square => square.move())
+    squares.forEach(square => square.afterMove())
   }
 
-  move(from, to, toMove) {
-    let fromSquare = this.data.find(row => row.find(square => square.heading == from)).find(square => square.heading == from)
-    let toSquare = this.data.find(row => row.find(square => square.heading == to)).find(square => square.heading == to)
-    if(to != from && fromSquare.availableMoves.includes(to) && fromSquare.unit.team == toMove) {
-      toSquare.unit = fromSquare.unit
-      fromSquare.unit = null
-      return true
-    } else {
-      return false
-    }
+  resolveOnce() {
+    squares.forEach(square => square.resolve())
   }
 
-  get unitString() {
-    return this.data.map(row => {
-      return row.map(square => {
-        return square.isEmpty ? ' ' : square.unit.toString()
-      }).join('')
-    }).join('')
-  }
-
-  get toObj() {
-    return this.data.map(row => row.map(square => square.toObj))
+  resolve() {
+    while(!this.isResolved)
+      this.resolveOnce()
   }
 }
 

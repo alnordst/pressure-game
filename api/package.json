@@ -21,6 +21,7 @@
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
+    "@ruby2js/register": "0.0.2",
     "dotenv": "^9.0.2"
   }
 }

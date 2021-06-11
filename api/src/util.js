@@ -2,13 +2,15 @@ const axios = require('axios')
 const knex = require('./db')
 
 module.exports = {
-  pick: (...arr) => ({from: (obj) => {
-    return arr.reduce((acc, key) => {
-      if(key in obj)
-        acc[key] = obj[key]
-      return acc
-    }, {})
-  }}),
+  obj: (obj) => ({
+    pick: (...arr) => {
+      return arr.reduce((acc, key) => {
+        if(key in obj)
+          acc[key] = obj[key]
+        return acc
+      }, {})
+    }
+  }),
   webhooks: async ({players, reason, data}) => {
     let registrations = await knex('webhook_registrations')
       .select()

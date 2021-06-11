@@ -3,17 +3,34 @@ const router = express.Router()
 const knex = require('../db')
 const Board = require('../classes/Board')
 const mustHave = require('../middleware/mustHave')
-const { pick, webhooks } = require('../util')
+const util = require('../util')
 
 
 router
 
   .post('/find-game', async (req, res) => {
+    let options = util.obj(req.body)
+      .pick('mapId', 'pw', 'automaticTurnProgression')
+    try {
+      let game = await Challenge.post(req.player, options)
+      if(game)
+        res.status(200).send(game)
+      else
+        res.sendStatus(204)
+    } catch (err) {
+      if(err == 'duplicate challenge')
+        res.status(400).send(err)
+      else
+        throw err
+    }
+    /*
     let options = pick('map', 'password', 'strict').from(req.body)
     let existingChallenges = await knex('challenges').where(options)
 
     if(existingChallenges.length) {
-      let validChallenge = existingChallenges.find(challenge => challenge.player_id != req.player)
+      let validChallenge = existingChallenges.find(challenge => {
+        return challenge.player_id != req.player
+      })
       if(!validChallenge)
         res.status(400).send('Duplicate challenge')
       else
@@ -33,8 +50,8 @@ router
             units: map.units
           })
           let game = await trx('games_vw').where({id:gameId}).first()
-          let board = Board.fromGame(game)
-          game.board = board.toObj
+          let board = new Board(game.stateData)
+          game.board = board.toObj()
           await webhooks({
             players: [validChallenge.player_id],
             reason: 'game-start',
@@ -48,15 +65,16 @@ router
         player_id: req.player
       })
       res.sendStatus(204)
-    }
+    }*/
   })
 
+  // TODO make double blind
   .post('/move', mustHave(['game', 'from', 'to']), async (req, res) => {
     let games = await knex('games_vw').where({'id':req.body.game})
     if(games.length){
       let game = games[0]
       if(['red', 'blue'].some(c => req.player == game[`${c}_player_id`] && game.to_move == c && !game.is_complete)) {
-        let board = Board.fromGame(game)
+        let board = new Board(game.stateData)
         let valid = board.move(req.body.from, req.body.to, game.to_move)
         if(valid) {
           await knex('states').insert({

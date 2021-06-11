@@ -1,69 +1,40 @@
 class Terrain {
-  constructor(name, char, type) {
-    this.name = name
-    this.char = char
+  constructor({category, type}) {
+    this.category = category
     this.type = type
+
     this.defenseModifier = 0
-    this.passable = true
-    this.obstructs = false
-  }
+    this.isPassable = true
+    this.isObstructed = false
 
-  static fromChar(char) {
-    if(char == 'f')
-      return new ProtectedTerrain('forest', char)
-    else if(char == 'm')
-      return new ImpassableTerrain('mountain', char)
-    else if(char == 'r')
-      return new ExposedTerrain('road', char)
-    else
-      return new StandardTerrain('plains', char)
-  }
-
-  toString() {
-    return this.char
-  }
-
-  get toObj() {
-    return {
-      name: this.name,
-      type: this.type,
-      passable: this.passable,
-      obstructs: this.obstructs
+    switch(category) {
+      case 'standard':
+        break
+      case 'protected':
+        this.defenseModifier = 1
+        this.isObstructed = true
+        break
+      case 'exposed':
+        this.defenseModifier = -1
+        break
+      case 'impassable':
+        this.isPassable = false
+        this.isObstructed = true
+        break
     }
   }
-}
 
-
-class StandardTerrain extends Terrain {
-  constructor(name, char) {
-    super(name, char)
-    this.type = 'standard'
-  }
-}
-
-class ProtectedTerrain extends Terrain {
-  constructor(name, char) {
-    super(name, char) 
-    this.type = 'protected'
-    this.defenseModifier = 1
-    this.obstructs = true
-  }
-}
-
-class ExposedTerrain extends Terrain {
-  constructor(name, char) {
-    super(name, char)
-    this.type = 'exposed'
-    this.defenseModifier = -1
-  }
-}
-
-class ImpassableTerrain extends Terrain {
-  constructor(name, char) {
-    super(name, char)
-    this.type = 'impassable'
-    this.passable = false
-    this.obstructs = true
+  toObj(slim=false) {
+    let essential = {
+      category: this.category,
+      type: this.type
+    }
+    let extra = {
+      defenseModifier: this.defenseModifier,
+      isPassable: this.isPassable,
+      isObstructed: this.isObstructed
+    }
+    return slim ? essential : {...essential, ...extra}
   }
 }
 
