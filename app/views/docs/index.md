@@ -42,7 +42,7 @@ List all [maps](#map) submitted by selected player (by `id`).
 Get a [state](#state) by `id`.
 
 ### POSTs
-All `POST` requests are authenticated with bearer token against *Discord's OAuth2*. All posts respond with status code `403: Forbidden` on authentication failure. Include in header:
+All `POST` requests are authenticated with bearer token against [Discord's OAuth2](https://discordjs.guide/oauth2/). All posts respond with status code `403: Forbidden` on authentication failure. Include in header:
 ```
 Authorization: Bearer <client token>
 ```
