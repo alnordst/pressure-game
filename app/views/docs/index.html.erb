@@ -1,0 +1,998 @@
+<h1 class="no_toc" id="pressure-game-api">Pressure Game API</h1>
+
+<p>This is the API for running a client for the game <strong>Pressure</strong>.</p>
+
+<ul id="markdown-toc">
+  <li><a href="#endpoints" id="markdown-toc-endpoints">Endpoints</a>    <ul>
+      <li><a href="#gets" id="markdown-toc-gets">GETs</a>        <ul>
+          <li><a href="#get-" id="markdown-toc-get-">GET /</a></li>
+          <li><a href="#get-map" id="markdown-toc-get-map">GET /map</a></li>
+          <li><a href="#get-mapid" id="markdown-toc-get-mapid">GET /map/:id</a></li>
+          <li><a href="#get-match" id="markdown-toc-get-match">GET /match</a></li>
+          <li><a href="#get-matchid" id="markdown-toc-get-matchid">GET /match/:id</a></li>
+          <li><a href="#get-playerid" id="markdown-toc-get-playerid">GET /player/:id</a></li>
+          <li><a href="#get-playerfrom-discord-iddiscord-id" id="markdown-toc-get-playerfrom-discord-iddiscord-id">GET /player/from-discord-id/:discord-id</a></li>
+          <li><a href="#get-playeridmatches" id="markdown-toc-get-playeridmatches">GET /player/:id/matches</a></li>
+          <li><a href="#get-playeridmaps" id="markdown-toc-get-playeridmaps">GET /player/:id/maps</a></li>
+          <li><a href="#get-stateid" id="markdown-toc-get-stateid">GET /state/:id</a></li>
+        </ul>
+      </li>
+      <li><a href="#posts" id="markdown-toc-posts">POSTs</a>        <ul>
+          <li><a href="#post-mapsubmit-map" id="markdown-toc-post-mapsubmit-map">POST /map/submit-map</a></li>
+          <li><a href="#post-matchfind-match" id="markdown-toc-post-matchfind-match">POST /match/find-match</a></li>
+          <li><a href="#post-matchidsubmit-move" id="markdown-toc-post-matchidsubmit-move">POST /match/:id/submit-move</a></li>
+          <li><a href="#post-matchidconcede" id="markdown-toc-post-matchidconcede">POST /match/:id/concede</a></li>
+          <li><a href="#post-matchidoffer-draw" id="markdown-toc-post-matchidoffer-draw">POST /match/:id/offer-draw</a></li>
+          <li><a href="#post-playerlist-webhooks" id="markdown-toc-post-playerlist-webhooks">POST /player/list-webhooks</a></li>
+          <li><a href="#post-playerregister-webhook" id="markdown-toc-post-playerregister-webhook">POST /player/register-webhook</a></li>
+          <li><a href="#post-playerdisconnect-webhook" id="markdown-toc-post-playerdisconnect-webhook">POST /player/disconnect-webhook</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#datatypes" id="markdown-toc-datatypes">Datatypes</a>    <ul>
+      <li><a href="#address" id="markdown-toc-address">Address</a></li>
+      <li><a href="#board" id="markdown-toc-board">Board</a></li>
+      <li><a href="#command" id="markdown-toc-command">Command</a></li>
+      <li><a href="#direction" id="markdown-toc-direction">Direction</a></li>
+      <li><a href="#map" id="markdown-toc-map">Map</a></li>
+      <li><a href="#match" id="markdown-toc-match">Match</a></li>
+      <li><a href="#match-configuration" id="markdown-toc-match-configuration">Match Configuration</a></li>
+      <li><a href="#player" id="markdown-toc-player">Player</a></li>
+      <li><a href="#square" id="markdown-toc-square">Square</a>        <ul>
+          <li><a href="#terrain" id="markdown-toc-terrain">Terrain</a></li>
+          <li><a href="#unit" id="markdown-toc-unit">Unit</a></li>
+          <li><a href="#threat" id="markdown-toc-threat">Threat</a></li>
+          <li><a href="#threatened-by" id="markdown-toc-threatened-by">Threatened By</a></li>
+        </ul>
+      </li>
+      <li><a href="#state" id="markdown-toc-state">State</a></li>
+      <li><a href="#webhook" id="markdown-toc-webhook">Webhook</a></li>
+    </ul>
+  </li>
+  <li><a href="#webhooks" id="markdown-toc-webhooks">Webhooks</a></li>
+  <li><a href="#todo" id="markdown-toc-todo">TODO</a></li>
+</ul>
+
+<h2 id="endpoints">Endpoints</h2>
+
+<h3 id="gets">GETs</h3>
+<p>All GET requests respond with status code <code>200: Ok</code> on success, and status code <code>404: Not found</code> if the resource cannot be found.</p>
+
+<h4 id="get-">GET /</h4>
+<p>API docs. You are here.</p>
+
+<h4 id="get-map">GET /map</h4>
+<p>Lists all <a href="#map">maps</a>.</p>
+
+<h4 id="get-mapid">GET /map/:id</h4>
+<p>Get a <a href="#map">map</a> by <code>id</code>.</p>
+
+<h4 id="get-match">GET /match</h4>
+<p>Lists all <a href="#match">matches</a>.</p>
+
+<h4 id="get-matchid">GET /match/:id</h4>
+<p>Get an <a href="#match">expanded match</a> by <code>id</code>.</p>
+
+<h4 id="get-playerid">GET /player/:id</h4>
+<p>Get a <a href="#player">player</a> by <code>id</code>.</p>
+
+<h4 id="get-playerfrom-discord-iddiscord-id">GET /player/from-discord-id/:discord-id</h4>
+<p>Get a <a href="#player">player</a> by <code>discord-id</code>.</p>
+
+<h4 id="get-playeridmatches">GET /player/:id/matches</h4>
+<p>List all <a href="#match">matches</a> in which selected player (by <code>id</code>) is a participant.</p>
+
+<h4 id="get-playeridmaps">GET /player/:id/maps</h4>
+<p>List all <a href="#map">maps</a> submitted by selected player (by <code>id</code>).</p>
+
+<h4 id="get-stateid">GET /state/:id</h4>
+<p>Get a <a href="#state">state</a> by <code>id</code>.</p>
+
+<h3 id="posts">POSTs</h3>
+<p>All <code>POST</code> requests are authenticated with bearer token against <em>Discord’s OAuth2</em>. All posts respond with status code <code>403: Forbidden</code> on authentication failure. Include in header:
+<code>
+Authorization: Bearer &lt;client token&gt;
+</code></p>
+
+<h4 id="post-mapsubmit-map">POST /map/submit-map</h4>
+<p>Submit a new map.</p>
+
+<h5 class="no_toc" id="request-body">Request Body</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>name</td>
+      <td>string</td>
+      <td>name of map</td>
+    </tr>
+    <tr>
+      <td>data</td>
+      <td><a href="#board">board</a></td>
+      <td>initial board for map</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 class="no_toc" id="responses">Responses</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Payload</th>
+      <th>Expectation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>201</td>
+      <td>‘Created’</td>
+      <td>map successfully submitted</td>
+    </tr>
+    <tr>
+      <td>406</td>
+      <td>‘Invalid map’</td>
+      <td>map is invalid</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="post-matchfind-match">POST /match/find-match</h4>
+<p>Engage in matchmaking system to find a match. Starts a match if a satisfactory challenge exists, otherwise posts a challenge.</p>
+
+<h5 class="no_toc" id="request-body-1">Request Body</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>match_configuration</td>
+      <td><a href="#match-configuration">match configuration</a> (optional)</td>
+      <td>specify match configuration</td>
+    </tr>
+    <tr>
+      <td>password</td>
+      <td>string (optional)</td>
+      <td>use a password to match with a specific player</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 class="no_toc" id="responses-1">Responses</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Payload</th>
+      <th>Expectation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>201</td>
+      <td><a href="#match">expanded match</a></td>
+      <td>challenge found, match was created</td>
+    </tr>
+    <tr>
+      <td>202</td>
+      <td>‘Accepted’</td>
+      <td>no challenge was found, new challenge was issued</td>
+    </tr>
+    <tr>
+      <td>409</td>
+      <td>‘Duplicate challenge’</td>
+      <td>player has already submitted a challenge that looks like this one</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="post-matchidsubmit-move">POST /match/:id/submit-move</h4>
+<p>Submit a move in a match selected by <code>id</code>. Overwrites any previous command submitted by the player.</p>
+
+<h5 class="no_toc" id="request-body-2">Request Body</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>commands</td>
+      <td>[<a href="#command">command</a>]</td>
+      <td>array of commands to submit</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 class="no_toc" id="responses-2">Responses</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Payload</th>
+      <th>Expectation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>202</td>
+      <td>‘Accepted’</td>
+      <td>commands were successfully submitted</td>
+    </tr>
+    <tr>
+      <td>401</td>
+      <td>‘Not a participant of match’</td>
+      <td>player is not a participant of match</td>
+    </tr>
+    <tr>
+      <td>406</td>
+      <td>‘Invalid move’</td>
+      <td>commands are invalid</td>
+    </tr>
+    <tr>
+      <td>406</td>
+      <td>‘Match is over’</td>
+      <td>match is over</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="post-matchidconcede">POST /match/:id/concede</h4>
+<p>Concede a match selected by <code>id</code>.</p>
+
+<h5 class="no_toc" id="request-body-3">Request Body</h5>
+
+<p>None</p>
+
+<h5 class="no_toc" id="responses-3">Responses</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Payload</th>
+      <th>Expectation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>202</td>
+      <td>‘Accepted’</td>
+      <td>match successfully conceded</td>
+    </tr>
+    <tr>
+      <td>401</td>
+      <td>‘Not a participant of match’</td>
+      <td>player is not a participant of match</td>
+    </tr>
+    <tr>
+      <td>406</td>
+      <td>‘Match is over’</td>
+      <td>match is over</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="post-matchidoffer-draw">POST /match/:id/offer-draw</h4>
+<p>Offer draw in match selected by <code>id</code>.</p>
+
+<h5 class="no_toc" id="request-body-4">Request Body</h5>
+
+<p>None</p>
+
+<h5 class="no_toc" id="responses-4">Responses</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Payload</th>
+      <th>Expectation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>202</td>
+      <td>‘Accepted’</td>
+      <td>match successfully conceded</td>
+    </tr>
+    <tr>
+      <td>401</td>
+      <td>‘Not a participant of match’</td>
+      <td>player is not a participant of match</td>
+    </tr>
+    <tr>
+      <td>406</td>
+      <td>‘Not acceptable’</td>
+      <td>match is over</td>
+    </tr>
+    <tr>
+      <td>409</td>
+      <td>‘Conflict’</td>
+      <td>player has already offered a draw in this match</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="post-playerlist-webhooks">POST /player/list-webhooks</h4>
+<p>List webhooks registered to authenticated player. See: <a href="#webhooks">webhooks</a>.</p>
+
+<h5 class="no_toc" id="request-body-5">Request Body</h5>
+
+<p>None</p>
+
+<h5 class="no_toc" id="responses-5">Responses</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Payload</th>
+      <th>Expectation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>200</td>
+      <td>[<a href="#webhook">webhook</a>]</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="post-playerregister-webhook">POST /player/register-webhook</h4>
+<p>Register a webhook url for events associated to authenticated player. See: <a href="#webhooks">webhooks</a>.</p>
+
+<h5 class="no_toc" id="request-body-6">Request Body</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>url</td>
+      <td>string</td>
+      <td>webhook url</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 class="no_toc" id="responses-6">Responses</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Payload</th>
+      <th>Expectation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>202</td>
+      <td>“Accepted”</td>
+      <td>webhook successfully registered</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="post-playerdisconnect-webhook">POST /player/disconnect-webhook</h4>
+<p>Disconnect a webhook from authenticated player. See: <a href="#webhooks">webhooks</a>.</p>
+
+<h5 class="no_toc" id="request-body-7">Request Body</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>integer</td>
+      <td>webhook id</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 class="no_toc" id="responses-7">Responses</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Payload</th>
+      <th>Expectation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>202</td>
+      <td>‘Accepted’</td>
+      <td>webhook successfully removed</td>
+    </tr>
+    <tr>
+      <td>404</td>
+      <td>‘Not found’</td>
+      <td>webhook not found</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="datatypes">Datatypes</h2>
+
+<h4 id="address">Address</h4>
+
+<p>Represents a square of the board, a string structured as <code>&lt;character&gt;&lt;number&gt;</code> ex: <code>b5</code>. Character case is ignored, <code>c5</code> and <code>C5</code> are equivalent. The character represents the file (column) starting from the left at <code>a</code> and the number represents the rank (row) starting from the bottom at 1. The file after <code>z</code> is <code>aa</code>.</p>
+
+<pre><code>3 | a3 b3 c3
+2 | a2 b2 c2
+1 | a1 b1 c1
+------------
+  | a  b  c
+</code></pre>
+
+<h4 id="board">Board</h4>
+
+<p>Represents the game board. The board is an array of arrays of <a href="#square">squares</a>, where the first square of the first row is the upper left corner and the last square of the first row is the upper right corner.</p>
+
+<h4 id="command">Command</h4>
+
+<p>A command.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>address</td>
+      <td><a href="#address">address</a></td>
+      <td>address of square of unit to command</td>
+    </tr>
+    <tr>
+      <td>direction</td>
+      <td><a href="#direction">direction</a></td>
+      <td>direction unit should move</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="direction">Direction</h4>
+
+<p>A string representing a direction, among:</p>
+
+<pre><code class="language-json">[ "NW", "N", "NE"
+  "W",  "C", "E"
+  "SW", "S", "SE" ]
+</code></pre>
+
+<h4 id="map">Map</h4>
+
+<p>A map is an initial board state that a match can be played on.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>integer</td>
+      <td>internal database key</td>
+    </tr>
+    <tr>
+      <td>creator_id</td>
+      <td>integer</td>
+      <td>id of <a href="#player">player</a> who submitted map</td>
+    </tr>
+    <tr>
+      <td>ranks</td>
+      <td>integer</td>
+      <td>number of ranks (rows) in map</td>
+    </tr>
+    <tr>
+      <td>files</td>
+      <td>integer</td>
+      <td>number of files (columns) in map</td>
+    </tr>
+    <tr>
+      <td>data</td>
+      <td><a href="#board">board</a></td>
+      <td>initial board state for map</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="match">Match</h4>
+
+<p>A match played between two players.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>integer</td>
+      <td>internal database key</td>
+    </tr>
+    <tr>
+      <td>red_player_id</td>
+      <td>integer</td>
+      <td>id of <a href="#player">player</a> controlling red</td>
+    </tr>
+    <tr>
+      <td>blue_player_id</td>
+      <td>integer</td>
+      <td>id of <a href="#player">player</a> controlling blue</td>
+    </tr>
+    <tr>
+      <td>match_configuration_id</td>
+      <td>integer</td>
+      <td>id of <a href="#match-configuration">match configuration</a> for the match</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 class="no_toc" id="expanded">Expanded</h5>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>integer</td>
+      <td>internal database key</td>
+    </tr>
+    <tr>
+      <td>red_player</td>
+      <td><a href="#player">player</a></td>
+      <td>player controlling red</td>
+    </tr>
+    <tr>
+      <td>blue_player</td>
+      <td><a href="#player">player</a></td>
+      <td>player controlling blue</td>
+    </tr>
+    <tr>
+      <td>match_configuration</td>
+      <td><a href="#match-configuration">match configuration</a></td>
+      <td>match configuration for the match</td>
+    </tr>
+    <tr>
+      <td>over</td>
+      <td>boolean</td>
+      <td>true if match is over – whether by defeat, draw, or concession</td>
+    </tr>
+    <tr>
+      <td>winner</td>
+      <td>&lt;’red’ | ‘blue’ | null&gt;</td>
+      <td>color of match winner, or null if draw or match still in progress</td>
+    </tr>
+    <tr>
+      <td>states</td>
+      <td>[integer]</td>
+      <td>array of ids of <a href="#state">states</a> associated with this match</td>
+    </tr>
+    <tr>
+      <td>last_state</td>
+      <td><a href="#state">state</a></td>
+      <td>latest state of this match</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="match-configuration">Match Configuration</h4>
+
+<p>Settings defining rules for a match.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>integer</td>
+      <td>internal database id</td>
+    </tr>
+    <tr>
+      <td>map_id</td>
+      <td>integer</td>
+      <td>id of map to play on, random map selected if not defined</td>
+    </tr>
+    <tr>
+      <td>actions_per_turn</td>
+      <td>integer</td>
+      <td>number of commands each player is allowed to submit per turn</td>
+    </tr>
+    <tr>
+      <td>turn_progression</td>
+      <td>string (<a href="http://www.cronmaker.com">cron expression</a>)</td>
+      <td>if defined, turns will automatically proceed based on the cron expression (UTC) regardless of command submissions – otherwise, turns will progress immediately when both players have submitted commands</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="player">Player</h4>
+
+<p>A player.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>integer</td>
+      <td>internal database id</td>
+    </tr>
+    <tr>
+      <td>discord_id</td>
+      <td>string</td>
+      <td>Discord id</td>
+    </tr>
+    <tr>
+      <td>username</td>
+      <td>string</td>
+      <td>Discord username</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="square">Square</h4>
+
+<p>Represents a square of the board. When submitting a map, all fields may be omitted – the heading will be generated automatically (in fact any provided heading is always discarded) and it will default to a <em>plains</em> square with no unit.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>address</td>
+      <td><a href="#address">address</a></td>
+      <td>address of square</td>
+    </tr>
+    <tr>
+      <td>terrain</td>
+      <td><a href="#terrain">terrain</a></td>
+      <td>terrain of square</td>
+    </tr>
+    <tr>
+      <td>unit</td>
+      <td><a href="#unit">unit</a></td>
+      <td>unit at square</td>
+    </tr>
+    <tr>
+      <td>threat</td>
+      <td><a href="#threat">threat</a></td>
+      <td>threat on square</td>
+    </tr>
+    <tr>
+      <td>threatened_by</td>
+      <td><a href="#threatened-by">threatened by</a></td>
+      <td>addresses of squares threatening this one</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 id="terrain">Terrain</h5>
+
+<p>Represents terrain for a square.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>category</td>
+      <td>string</td>
+      <td>type of the terrain square, should inform behavior</td>
+    </tr>
+    <tr>
+      <td>type</td>
+      <td>string</td>
+      <td>name of terrain square, should inform the look of the square</td>
+    </tr>
+    <tr>
+      <td>offense_modifier</td>
+      <td>integer</td>
+      <td>offense modifier provided for any unit occupying this square</td>
+    </tr>
+    <tr>
+      <td>defense_modifier</td>
+      <td>integer</td>
+      <td>defense modifier provided for any unit occupying this square</td>
+    </tr>
+    <tr>
+      <td>passable</td>
+      <td>boolean</td>
+      <td>true if the terrain can be occupied by a unit</td>
+    </tr>
+    <tr>
+      <td>obstructs</td>
+      <td>boolean</td>
+      <td>true if the terrain obstructs sniper threat lines</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 id="unit">Unit</h5>
+
+<p>Represents unit occupying a square.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>team</td>
+      <td>&lt;’red’ | ‘blue’&gt;</td>
+      <td>the team this unit belongs to</td>
+    </tr>
+    <tr>
+      <td>category</td>
+      <td>string</td>
+      <td>unit category</td>
+    </tr>
+    <tr>
+      <td>type</td>
+      <td>string</td>
+      <td>unit type</td>
+    </tr>
+    <tr>
+      <td>command</td>
+      <td><a href="#direction">direction</a></td>
+      <td>direction unit will move next turn unless a new command is given</td>
+    </tr>
+    <tr>
+      <td>valid_commands</td>
+      <td>[<a href="#direction">direction</a>]</td>
+      <td>array of directions this unit is able to receive in commands</td>
+    </tr>
+    <tr>
+      <td>threatens</td>
+      <td>[<a href="#address">address</a>]</td>
+      <td>array of addresses of squares that this unit threatens</td>
+    </tr>
+    <tr>
+      <td>base_offense</td>
+      <td>integer</td>
+      <td>base offense of this unit, as defined by its type and category</td>
+    </tr>
+    <tr>
+      <td>base_defense</td>
+      <td>integer</td>
+      <td>base defense of this unit, as defined by its type and category</td>
+    </tr>
+    <tr>
+      <td>offense</td>
+      <td>integer</td>
+      <td>computed offense after modifiers</td>
+    </tr>
+    <tr>
+      <td>defense</td>
+      <td>integer</td>
+      <td>computed defense after modifiers</td>
+    </tr>
+    <tr>
+      <td>overwhelmed</td>
+      <td>boolean</td>
+      <td>true if unit’s defense is lower than <a href="#threat">threat</a> imposed on this square by opposing team</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 id="threat">Threat</h5>
+
+<p>Tallies threat on a square.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>red</td>
+      <td>number</td>
+      <td>amount of threat imposed by red units on this square</td>
+    </tr>
+    <tr>
+      <td>blue</td>
+      <td>number</td>
+      <td>amount of threat imposed by blue units on this square</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 id="threatened-by">Threatened By</h5>
+
+<p>Identifies units threatening a square.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Datatype</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>red</td>
+      <td>[<a href="#address">address</a>]</td>
+      <td>array of headings of red units that threaten this square</td>
+    </tr>
+    <tr>
+      <td>blue</td>
+      <td>[<a href="#address">address</a>]</td>
+      <td>array of headings of blue units that threaten this square</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="state">State</h4>
+
+<p>Represents a board state of a match.</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>Field</td>
+      <td>Datatype</td>
+      <td>Description</td>
+    </tr>
+    <tr>
+      <td>id</td>
+      <td>integer</td>
+      <td>internal database id</td>
+    </tr>
+    <tr>
+      <td>match_id</td>
+      <td>integer</td>
+      <td>id of <a href="#match">match</a> this state is associated with</td>
+    </tr>
+    <tr>
+      <td>data</td>
+      <td><a href="#board">board</a></td>
+      <td>board data representing this state</td>
+    </tr>
+    <tr>
+      <td>loser</td>
+      <td>&lt;’red’ | ‘blue’ | ‘both’ | null&gt;</td>
+      <td>team that has lost the game based on current state</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="webhook">Webhook</h4>
+
+<p>A webhook that can be registered to a user to be triggered on events. See <a href="#webhooks">webhooks</a>.</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>Field</td>
+      <td>Datatype</td>
+      <td>Description</td>
+    </tr>
+    <tr>
+      <td>id</td>
+      <td>integer</td>
+      <td>internal database id</td>
+    </tr>
+    <tr>
+      <td>url</td>
+      <td>string</td>
+      <td>target url for webhook</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="webhooks">Webhooks</h2>
+
+<p>Webhooks can be <a href="#post-playerregister-webhook">registered to a player</a>, and they will be triggered on any <a href="#event">event</a> involving that player. A <code>POST</code> request will be sent to the webhook url with body:</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>Field</td>
+      <td>Datatype</td>
+      <td>Description</td>
+    </tr>
+    <tr>
+      <td>reason</td>
+      <td>&lt;’match over’ | ‘next turn’ | ‘draw offer’&gt;</td>
+      <td>indicates reason webhook was triggered</td>
+    </tr>
+    <tr>
+      <td>match_id</td>
+      <td>integer</td>
+      <td>id of match for which the event was triggered</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="todo">TODO</h2>
+
+<ul>
+  <li>Set up automated turn progression</li>
+  <li>Set up query string filters on <a href="#get-map">GET /map</a> and <a href="#get-match">GET /match</a>.</li>
+</ul>

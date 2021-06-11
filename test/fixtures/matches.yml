@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  red_player: one
+  blue_player: one
+  match_configuration: one
+
+two:
+  red_player: two
+  blue_player: two
+  match_configuration: two
