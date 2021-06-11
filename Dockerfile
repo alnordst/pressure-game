@@ -7,11 +7,13 @@ COPY . /var/app
 WORKDIR /var/app
 
 ARG DB_PASSWORD
+ARG RAILS_MASTER_KEY
 
 ENV DB_PASSWORD=$DB_PASSWORD
+ENV RAILS_MASTER_KEY=$RAILS_MASTER_KEY
 ENV RAILS_ENV=production
 
 RUN bundle install
 RUN rake compile_md
 
-CMD rails s -b 0.0.0.0
+CMD rails server -b 0.0.0.0
