@@ -8,4 +8,4 @@
 Bot.create(discord_id:'841137656904679445', username: 'Pressure Game')
 Bot.create(discord_id:'841759845996167181', username: 'Pressure Game Dev')
 Player.create(discord_id:'136327880803221504', username: 'Six')
-Map.create(name:'Test', creator_id:1, json:"[[{\"unit\":{\"team\":\"blue\",\"type\":\"command\"}},{\"unit\":{\"team\":\"blue\",\"type\":\"artillery\"}},{\"unit\":{\"team\":\"blue\",\"type\":\"sniper\"}},{},{},{},{},{},{},{\"unit\":{\"team\":\"red\",\"type\":\"tank\"}},{\"unit\":{\"team\":\"red\",\"type\":\"infantry\"}},{\"unit\":{\"team\":\"red\",\"type\":\"command\"}}]]")
+Map.create(name:'Test', creator_id:1, data:"[[{\"unit\":{\"team\":\"blue\",\"type\":\"command\"}},{\"unit\":{\"team\":\"blue\",\"type\":\"artillery\"}},{\"unit\":{\"team\":\"blue\",\"type\":\"sniper\"}},{},{},{},{},{},{},{\"unit\":{\"team\":\"red\",\"type\":\"tank\"}},{\"unit\":{\"team\":\"red\",\"type\":\"infantry\"}},{\"unit\":{\"team\":\"red\",\"type\":\"command\"}}]]")

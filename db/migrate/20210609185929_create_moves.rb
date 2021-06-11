@@ -3,7 +3,7 @@ class CreateMoves < ActiveRecord::Migration[6.1]
     create_table :moves do |t|
       t.references :player, null: false, foreign_key: true
       t.references :state, null: false, foreign_key: true
-      t.text :json
+      t.text :data
 
       t.timestamps
     end

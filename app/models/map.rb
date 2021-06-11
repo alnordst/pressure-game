@@ -6,12 +6,13 @@ class Map < ApplicationRecord
   has_many :matches, through: :match_configurations
 
   before_create do
-    data = JSON.parse(json, symbolize_names: true)
-    board = Board.new(data)
+    puts data
+    parsed_data = JSON.parse(data, symbolize_names: true)
+    board = Board.new(parsed_data)
     throw 'game is over' unless board.loser.nil?
     board.cleanup
     board.cleanup
-    self.json = board.to_json
+    self.data = board.to_json
     self.ranks = board.ranks
     self.files = board.files
   end
@@ -21,14 +22,15 @@ class Map < ApplicationRecord
     Map.offset(offset).first
   end
 
+  # for testing
   def board
-    data = JSON.parse(json, symbolize_names: true)
+    data = JSON.parse(data, symbolize_names: true)
     Board.new(data)
   end
 
-  def self.board(json)
-    data = JSON.parse(json, symbolize_names: true)
+  # for testing
+  def self.board(data)
+    data = JSON.parse(data, symbolize_names: true)
     Board.new(data)
   end
-
 end

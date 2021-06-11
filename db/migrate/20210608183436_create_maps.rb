@@ -5,7 +5,7 @@ class CreateMaps < ActiveRecord::Migration[6.1]
       t.references :creator, null: false, foreign_key: false
       t.integer :ranks
       t.integer :files
-      t.text :json, null: false
+      t.text :data, null: false
 
       t.timestamps
     end
