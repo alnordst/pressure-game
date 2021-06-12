@@ -12,14 +12,17 @@
 
 ActiveRecord::Schema.define(version: 2021_06_10_011442) do
 
-  create_table "bots", charset: "utf8mb3", force: :cascade do |t|
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
+  create_table "bots", force: :cascade do |t|
     t.string "discord_id"
     t.string "username"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "challenges", charset: "utf8mb3", force: :cascade do |t|
+  create_table "challenges", force: :cascade do |t|
     t.bigint "player_id", null: false
     t.bigint "match_configuration_id", null: false
     t.string "password"
@@ -29,7 +32,7 @@ ActiveRecord::Schema.define(version: 2021_06_10_011442) do
     t.index ["player_id"], name: "index_challenges_on_player_id"
   end
 
-  create_table "concessions", charset: "utf8mb3", force: :cascade do |t|
+  create_table "concessions", force: :cascade do |t|
     t.bigint "player_id", null: false
     t.bigint "match_id", null: false
     t.datetime "created_at", precision: 6, null: false
@@ -38,7 +41,7 @@ ActiveRecord::Schema.define(version: 2021_06_10_011442) do
     t.index ["player_id"], name: "index_concessions_on_player_id"
   end
 
-  create_table "draw_offers", charset: "utf8mb3", force: :cascade do |t|
+  create_table "draw_offers", force: :cascade do |t|
     t.bigint "player_id", null: false
     t.bigint "match_id", null: false
     t.datetime "created_at", precision: 6, null: false
@@ -47,7 +50,7 @@ ActiveRecord::Schema.define(version: 2021_06_10_011442) do
     t.index ["player_id"], name: "index_draw_offers_on_player_id"
   end
 
-  create_table "maps", charset: "utf8mb3", force: :cascade do |t|
+  create_table "maps", force: :cascade do |t|
     t.string "name", null: false
     t.bigint "creator_id", null: false
     t.integer "ranks"
@@ -58,7 +61,7 @@ ActiveRecord::Schema.define(version: 2021_06_10_011442) do
     t.index ["creator_id"], name: "index_maps_on_creator_id"
   end
 
-  create_table "match_configurations", charset: "utf8mb3", force: :cascade do |t|
+  create_table "match_configurations", force: :cascade do |t|
     t.bigint "map_id"
     t.integer "actions_per_turn"
     t.string "turn_progression"
@@ -68,7 +71,7 @@ ActiveRecord::Schema.define(version: 2021_06_10_011442) do
     t.index ["map_id"], name: "index_match_configurations_on_map_id"
   end
 
-  create_table "matches", charset: "utf8mb3", force: :cascade do |t|
+  create_table "matches", force: :cascade do |t|
     t.bigint "red_player_id", null: false
     t.bigint "blue_player_id", null: false
     t.bigint "match_configuration_id", null: false
@@ -79,7 +82,7 @@ ActiveRecord::Schema.define(version: 2021_06_10_011442) do
     t.index ["red_player_id"], name: "index_matches_on_red_player_id"
   end
 
-  create_table "moves", charset: "utf8mb3", force: :cascade do |t|
+  create_table "moves", force: :cascade do |t|
     t.bigint "player_id", null: false
     t.bigint "state_id", null: false
     t.text "data"
@@ -89,7 +92,7 @@ ActiveRecord::Schema.define(version: 2021_06_10_011442) do
     t.index ["state_id"], name: "index_moves_on_state_id"
   end
 
-  create_table "player_webhooks", charset: "utf8mb3", force: :cascade do |t|
+  create_table "player_webhooks", force: :cascade do |t|
     t.bigint "player_id", null: false
     t.bigint "webhook_id", null: false
     t.datetime "created_at", precision: 6, null: false
@@ -98,14 +101,14 @@ ActiveRecord::Schema.define(version: 2021_06_10_011442) do
     t.index ["webhook_id"], name: "index_player_webhooks_on_webhook_id"
   end
 
-  create_table "players", charset: "utf8mb3", force: :cascade do |t|
+  create_table "players", force: :cascade do |t|
     t.string "discord_id"
     t.string "username"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "states", charset: "utf8mb3", force: :cascade do |t|
+  create_table "states", force: :cascade do |t|
     t.bigint "match_id", null: false
     t.text "data"
     t.string "loser"
@@ -114,7 +117,7 @@ ActiveRecord::Schema.define(version: 2021_06_10_011442) do
     t.index ["match_id"], name: "index_states_on_match_id"
   end
 
-  create_table "webhooks", charset: "utf8mb3", force: :cascade do |t|
+  create_table "webhooks", force: :cascade do |t|
     t.string "url"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
