@@ -94,7 +94,7 @@ class Board
     end
     @move
     @resolve
-    @cleanup
+    @set_next_command
     @assign_threat
   end
 
@@ -106,15 +106,22 @@ class Board
 
   def resolve
     until squares.all?(&:resolved?) do
+      @assign_threat
+      squares.each(&:before_resolve)
       squares.each(&:resolve)
     end
   end
 
-  def cleanup
-    squares.each(&:cleanup)
+  def set_next_command
+    squares.each(&:set_next_command)
   end
 
   def assign_threat
+    squares.each(&:reset)
     squares.each(&:assign_threat)
+  end
+
+  def reset
+    squares.each(&:reset)
   end
 end

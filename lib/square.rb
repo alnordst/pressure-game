@@ -103,10 +103,6 @@ class Square
 
   #-- Lifecycle --#
 
-  def assign_threat
-    unit&.assign_threat
-  end
-
   def before_move
     unit&.before_move
   end
@@ -119,13 +115,25 @@ class Square
     units.each { |unit| unit.after_move }
   end
 
+  def before_resolve
+    units.each { |unit| unit.before_resolve } unless resolved?
+  end
+
   def resolve
     units.reject!(&:overwhelmed?) if contested?
     units.dup.each(&:rebound) unless resolved?
   end
 
-  def cleanup
-    unit&.cleanup
+  def set_next_command
+    unit&.set_next_command
+  end
+
+  def assign_threat
+    unit&.assign_threat
+  end
+
+  def reset
+    unit&.reset
     @threat = { red: 0, blue: 0}
     @threatened_by = { red: [], blue: [] }
   end

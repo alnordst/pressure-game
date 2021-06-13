@@ -82,8 +82,6 @@ class Unit
 
   #-- Lifecycle --#
 
-  def assign_threat; end
-
   def before_move; end
 
   def move
@@ -97,15 +95,22 @@ class Unit
 
   def after_move; end
 
+  def before_resolve; end
+
   def rebound
     square.remove self
     previous_square.add self
     square, previous_square = previous_square, nil
   end
 
-  def cleanup
-    previous_square = nil
+  def set_next_command
     command, next_command = next_command, nil
+  end
+
+  def assign_threat; end
+
+  def reset
+    previous_square = nil
     threatens = []
     offense_modifier, defense_modifier = 0
   end
