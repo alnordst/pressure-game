@@ -16,6 +16,7 @@ Rails.application.routes.draw do
 
   post "/match/find-match", to: "match#find_match"
   post "/match/:id/submit-move", to: "match#submit_move"
+  post "/match/:id/forecast", to: "match#forecast"
   post "/match/:id/concede", to: "match#concede"
   post "/match/:id/offer-draw", to: "match#offer_draw"
 

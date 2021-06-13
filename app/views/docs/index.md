@@ -106,6 +106,23 @@ Code | Payload | Expectation
 406 | 'Invalid move' | commands are invalid
 406 | 'Match is over' | match is over
 
+#### POST /match/:id/forecast
+Forecast the result of a set of commands on match selected by `id`. A player can submit moves for their opponent's units here as well. The state of the match is not affected at all.
+
+##### Request Body
+{:.no_toc}
+
+Field | Datatype | Description
+--- | --- | ---
+commands | [[command](#command)] | array of commands to forecast
+
+##### Responses
+{:.no_toc}
+
+Code | Payload | Expectation
+--- | --- | ---
+200 | [state](#state) | forecasted state of the board
+
 #### POST /match/:id/concede
 Concede a match selected by `id`.
 

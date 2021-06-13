@@ -53,6 +53,13 @@ class MatchController < ApplicationController
     end
   end
 
+  def forecast
+    authenticate!
+    match = get_match(params[:id])
+    state = match.forecast(params[:commands])
+    render json: state, status: :ok
+  end
+
   def concede
     authenticate!
     match = get_match(params[:id])

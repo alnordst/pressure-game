@@ -90,6 +90,12 @@ class Match < ApplicationRecord
     create_state data: board.to_json, loser: board.loser
   end
 
+  def forecast(commands)
+    board = Board.new(JSON.parse(states.last.data))
+    board.play(commands)
+    { data: board.to_json, loser: board.loser }
+  end
+
   def notify(reason)
     webhooks.each do |webhook|
       HTTParty.post(webhook.url, body: {reason: reason, match_id: id})
