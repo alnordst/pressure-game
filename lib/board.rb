@@ -99,26 +99,33 @@ class Board
   end
 
   def move
-    squares.each(&:before_move)
-    squares.each(&:move)
-    squares.each(&:after_move)
+    squares.each{ |square| square.unit&.before_move }
+    squares.each{ |square| square.unit&.move }
+    squares.each{ |square| square.units.each(&:after_move) }
   end
 
   def resolve
     until squares.all?(&:resolved?) do
-      @assign_threat
-      squares.each(&:before_resolve)
-      squares.each(&:resolve)
+      assign_threat
+      unresolved_squares = squares.reject(&:resolved?)
+      unresolved_squares.each{ |square| square.units.each(&:before_resolve) }
+      unresolved_squares.each do |square|
+        square.units.reject!(&:overwhelmed?) if square.contested?
+        square.units.each{ |unit| unit.must_rebound? = true } unless square.resolved?
+      end
+      unresolved_squares.each do |square|
+        square.units.select(&:must_rebound).each(&:rebound)
+      end
     end
   end
 
   def set_next_command
-    squares.each(&:set_next_command)
+    squares.each{ |square| square.unit&.set_next_command }
   end
 
   def assign_threat
-    squares.each(&:reset)
-    squares.each(&:assign_threat)
+    reset
+    squares.each{ |square| square.unit&.assign_threat }
   end
 
   def reset

@@ -14,7 +14,7 @@ class Square
     @terrain = Terrain.new(**terrain.slice(:category, :type))
 
     @units = if unit && unit[:type]
-      kwargs = unit.slice(:team, :command, :threatens, :defense_modifier, :offense_modifier)
+      kwargs = unit.slice(:team, :command)
       the_unit = case unit[:type].to_sym.downcase
       when :artillery then Artillery.new self, **kwargs
       when :command then Command.new self, **kwargs
@@ -45,22 +45,6 @@ class Square
   end
 
   #-- Status --#
-
-  def defense_modifier
-    terrain.defense_modifier
-  end
-
-  def offense_modifier
-    terrain.offense_modifier
-  end
-
-  def passable?
-    terrain.passable?
-  end
-
-  def obstructed?
-    terrain.obstructed? || !empty?
-  end
 
   def empty?
     @units.empty?
@@ -99,37 +83,6 @@ class Square
 
   def neighbors(**kwargs, &test)
     @board.neighbors_of(self, **kwargs)
-  end
-
-  #-- Lifecycle --#
-
-  def before_move
-    unit&.before_move
-  end
-
-  def move
-    unit&.move
-  end
-
-  def after_move
-    units.each { |unit| unit.after_move }
-  end
-
-  def before_resolve
-    units.each { |unit| unit.before_resolve } unless resolved?
-  end
-
-  def resolve
-    units.reject!(&:overwhelmed?) if contested?
-    units.dup.each(&:rebound) unless resolved?
-  end
-
-  def set_next_command
-    unit&.set_next_command
-  end
-
-  def assign_threat
-    unit&.assign_threat
   end
 
   def reset

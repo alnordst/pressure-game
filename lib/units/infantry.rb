@@ -9,9 +9,10 @@ class Infantry < Unit
 
   def assign_threat
     super
-    @square
+    threaten square
+    square
       .neighbors(headings:[[0, 1], [1, 1]], rotate: true)
-      .each { |square| threaten square }
+      .each { |other_square| threaten other_square }
   end
 
   def afterMove
@@ -23,7 +24,7 @@ class Infantry < Unit
       W: [:NE, :E, :SE]
     }
     if follower_directions.has_key? @command
-      @previous_square
+      @original_square
         .neighbors(headings: follower_directions[@command], units: true)
         .filter { |unit| unit.category == :infantry && unit.team == @team }
         .each do |unit|

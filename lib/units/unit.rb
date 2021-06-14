@@ -1,22 +1,21 @@
 require_relative '../team'
 
 class Unit
-  attr_accessor :offense_modifier, :defense_modifier
+  attr_accessor :offense_modifier, :defense_modifier, :must_rebound
   attr_reader :square, :team, :threatens, :valid_commands,
-    :category, :type, :previous_square, :command, :next_command,
-    :base_offense, :base_defense
+    :category, :type, :original_square, :command, :next_command
 
-  def initialize(square, team:, command: nil, threatens: [],
-  defense_modifier: 0, offense_modifier: 0)
-    @square = square
-    @category, @type, @next_command = nil
-    @valid_commands = []
-    @base_offense = 1
-    @base_defense = 1
+  def initialize(square, team:, command: nil)
+    @square = @original_square = square
     @team = Team.new team
     raise 'invalid team' unless @team
-    @command, @threatens = command, threatens
-    @offense_modifier, @defense_modifier = offense_modifier, defense_modifier
+    @command = command
+    @valid_commands = []
+    @threatens = []
+    @base_offense = @base_defense = 1
+    @offense_modifier = @defense_modifier = 0
+    @category = @type = @next_command = nil
+    @moved = @must_rebound = false
   end
 
   def to_h
@@ -29,11 +28,12 @@ class Unit
       valid_commands: valid_commands,
       offense: offense,
       defense: defense,
-      base_offense: base_offense,
-      base_defense: base_defense,
+      base_offense: @base_offense,
+      base_defense: @base_defense,
       offense_modifier: offense_modifier,
       defense_modifier: defense_modifier,
-      overwhelmed: overwhelmed?
+      overwhelmed: overwhelmed?,
+      moved: moved?
     }
   end
 
@@ -44,11 +44,11 @@ class Unit
   #-- Statuses --#
 
   def offense
-    base_offense + offense_modifier + square.offense_modifier
+    @base_offense + offense_modifier + square.terrain.offense_modifier
   end
 
   def defense
-    base_defense + defense_modifier + square.defense_modifier
+    @base_defense + defense_modifier + square.terrain.defense_modifier
   end
 
   def overwhelmed?
@@ -56,20 +56,21 @@ class Unit
   end
 
   def moved?
-    square != previous_square && !previous_square.nil?
+    @moved
   end
 
   #-- Actions --#
 
   def threaten square
-    threatens << square.address
+    threatens << square.address.to_sym
     square.receive_threat self
   end
 
   def move_to destination_square
-    previous_square, square = square, destination_square
-    previous_square.remove self
+    square.remove self
+    square = destination_square
     square.add self
+    @moved = true
   end
 
   def command= command
@@ -77,7 +78,7 @@ class Unit
   end
 
   def next_command= command
-    next_command = command if valid_commands.include? command
+    @next_command = command if valid_commands.include? command
   end
 
   #-- Lifecycle --#
@@ -89,7 +90,7 @@ class Unit
       destination_square = square
         .neighbors(headings: [command])
         .first
-      move_to(destination_square) if destination_square.passable?
+      move_to(destination_square) if destination_square.terrain.passable?
     end
   end
 
@@ -99,8 +100,9 @@ class Unit
 
   def rebound
     square.remove self
-    previous_square.add self
-    square, previous_square = previous_square, nil
+    square = original_square
+    square.add self
+    must_rebound = false
   end
 
   def set_next_command
@@ -110,7 +112,6 @@ class Unit
   def assign_threat; end
 
   def reset
-    previous_square = nil
     threatens = []
     offense_modifier, defense_modifier = 0
   end

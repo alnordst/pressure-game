@@ -10,6 +10,7 @@ class Tank < Vehicle
 
   def assign_threat
     super
+    threaten square
     square
       .neighbors(headings: [[0, 1], [1, 1]], rotate: true)
       .each { |square| threaten square }
