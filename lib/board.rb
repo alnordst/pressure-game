@@ -111,7 +111,9 @@ class Board
       unresolved_squares.each{ |square| square.units.each(&:before_resolve) }
       unresolved_squares.each do |square|
         square.units.reject!(&:overwhelmed?) if square.contested?
-        square.units.each{ |unit| unit.must_rebound? = true } unless square.resolved?
+        unless square.resolved?
+          square.units.each{ |unit| unit.must_rebound = true }
+        end
       end
       unresolved_squares.each do |square|
         square.units.select(&:must_rebound).each(&:rebound)
