@@ -10,6 +10,7 @@ ARG RAILS_MASTER_KEY
 
 ENV RAILS_MASTER_KEY=$RAILS_MASTER_KEY
 ENV RAILS_ENV=production
+ENV RAILS_LOG_TO_STDOUT=true
 
 RUN bundle install
 RUN rake compile_md
