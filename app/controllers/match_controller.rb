@@ -12,14 +12,14 @@ class MatchController < ApplicationController
     match_configuration = MatchConfiguration.new params[:match_configuration]
 
     if @player.challenges.any? do |c|
-      c.match_configuration.equivalent_to? match_configuration &&
+      c.match_configuration.equivalent_to?(match_configuration) &&
       c.password == params[:password]
     end
       raise ApiError.new(:conflict, "Duplicate challenge")
     end
 
     challenge = Challenge.find do |c|
-      c.match_configuration.satisfies? match_configuration &&
+      c.match_configuration.satisfies?(match_configuration) &&
       c.password == params[:password]
     end
     if challenge

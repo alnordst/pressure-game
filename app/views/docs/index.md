@@ -153,7 +153,7 @@ None
 
 Code | Payload | Expectation
 ---- | ------- | -----------
-202 | 'Accepted' | match successfully conceded
+202 | 'Accepted' | draw offer received
 401 | 'Not a participant of match' | player is not a participant of match
 406 | 'Not acceptable' | match is over
 409 | 'Conflict' | player has already offered a draw in this match
