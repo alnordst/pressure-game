@@ -6,12 +6,10 @@ class Map < ApplicationRecord
   has_many :matches, through: :match_configurations
 
   before_create do
-    puts data
     parsed_data = JSON.parse(data, symbolize_names: true)
     board = Board.new(parsed_data)
     throw 'game is over' unless board.loser.nil?
-    board.cleanup
-    board.cleanup
+    board.reset
     self.data = board.to_json
     self.ranks = board.ranks
     self.files = board.files

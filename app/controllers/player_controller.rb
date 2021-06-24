@@ -22,17 +22,24 @@ class PlayerController < ApplicationController
 
   def register_webhook
     authenticate!
-    webhook = Webhook.find_by(url: params[:url]) ||
-      Webhook.create(url: params[:url])
-    @player.webhooks << webhook
-    render status: :accepted
+    if(@player.webhooks.any?{ |webhook| webhook.url == params[:url] })
+      render status: :conflict
+    else
+      webhook = Webhook.find_by(url: params[:url]) ||
+        Webhook.create(url: params[:url])
+      @player.webhooks << webhook
+      render status: :accepted
+    end
   end
 
   def disconnect_webhook
     authenticate!
-    webhooks = @player.webhooks.where url: params[:url]
-    raise ApiError.new(:not_found) unless webhooks.any?
-    webhooks.delete_all
+    registrations = @player.player_webhooks.where(
+      webhook_id: params[:id],
+      player_id: @player.id
+    )
+    raise ApiError.new(:not_found) unless registrations.any?
+    registrations.delete_all
     render status: :ok
   end
 end

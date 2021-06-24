@@ -3,7 +3,8 @@ require_relative './unit'
 class Infantry < Unit
   def initialize square, **kwargs
     super
-    @category, @type = :infantry
+    @category = :infantry
+    @type = :infantry
     @valid_commands = [:NW, :N, :NE, :E, :SE, :S, :SW, :W, :C]
   end
 

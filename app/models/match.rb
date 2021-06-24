@@ -16,6 +16,7 @@ class Match < ApplicationRecord
   after_create do
     map_data = JSON.parse(match_configuration.map.data, symbolize_names: true)
     board = Board.new map_data
+    board.reset
     board.assign_threat
     states.create data: board.to_json
   end

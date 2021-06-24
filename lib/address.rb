@@ -1,5 +1,5 @@
 class Address
-  attr_reader :rank, :rank_num, :file
+  attr_reader :rank, :file, :file_num
 
   class << self
     def rotate(headings)
@@ -22,17 +22,17 @@ class Address
     end
   end
 
-  def initialize(rank_num, file)
-    @rank_num, @file = rank_num, file
-    @rank = rank_chars
+  def initialize(rank, file_num)
+    @rank, @file_num = rank, file_num
+    @file = file_chars
   end
 
   def ==(other)
-    @rank_num == other.rank_num && @file == other.file
+    @rank == other.rank && @file_num == other.file_num
   end
 
   def to_s
-    "#{@rank}#{@file}"
+    "#{@file}#{@rank}"
   end
 
   def to_sym
@@ -42,14 +42,14 @@ class Address
   def go_in(heading, distance=1)
     processed = Address.process_heading heading
     scaled = processed.map { |component| component * distance }
-    Address.new(@rank_num + scaled.first, @file + scaled.last)
+    Address.new(@rank - scaled.first, @file_num + scaled.last)
   end
 
   private
 
-  def rank_chars
+  def file_chars
     char_count = 'Z'.ord - 'A'.ord + 1
-    ords = @rank_num.divmod(char_count)
+    ords = @file_num.divmod(char_count)
     raise 'Board is too big' if ords.first > char_count
     chars = ''
     chars << (ords.first + 'A'.ord - 2).chr if ords.first > 0

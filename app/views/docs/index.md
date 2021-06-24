@@ -189,6 +189,7 @@ url | string | webhook url
 Code | Payload | Expectation
 ---- | ------- | -----------
 202 | "Accepted" | webhook successfully registered
+409 | "Conflict" | webhook with that url already registered
 
 #### POST /player/disconnect-webhook
 Disconnect a webhook from authenticated player. See: [webhooks](#webhooks).
