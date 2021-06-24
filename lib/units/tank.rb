@@ -12,7 +12,7 @@ class Tank < Vehicle
     super
     threaten square
     square
-      .neighbors(headings: [[0, 1], [1, 1]], rotate: true)
+      .neighbors(headings: [[0, 1]], rotate: true)
       .each { |square| threaten square }
   end
 end
