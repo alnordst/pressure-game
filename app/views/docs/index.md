@@ -392,6 +392,7 @@ Webhooks can be [registered to a player](#post-playerregister-webhook), and they
 Field | Datatype | Description
 reason | <'match over' \| 'next turn' \| 'draw offer'> | indicates reason webhook was triggered
 match_id | integer | id of match for which the event was triggered
+player_id | integer | id of player for whom the event was triggered
 
 ## TODO
 

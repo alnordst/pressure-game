@@ -38,8 +38,12 @@ class Match < ApplicationRecord
     [red_player, blue_player].compact
   end
 
-  def webhooks
-    players.map(&:webhooks).flatten(1).uniq
+  def player_webhooks
+    players.map do |player|
+      player.webhooks.map do |webhook|
+        {player: player, webhook: webhook}
+      end
+    end.flatten(1)
   end
 
   def over?
@@ -98,8 +102,12 @@ class Match < ApplicationRecord
   end
 
   def notify(reason)
-    webhooks.each do |webhook|
-      HTTParty.post(webhook.url, body: {reason: reason, match_id: id})
+    player_webhooks.each do |item|
+      HTTParty.post(item[:webhook].url, body: {
+        reason: reason,
+        match_id: id,
+        player_id: item[:player].id
+      })
     end
   end
 end
