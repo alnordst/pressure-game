@@ -3,6 +3,8 @@ class MatchConfiguration < ApplicationRecord
   has_one :match
   has_one :challenge
 
+  attribute :actions_per_turn, :integer, default: 1
+
   def equivalent_to?(other)
     map == other.map &&
     actions_per_turn == other.actions_per_turn &&
