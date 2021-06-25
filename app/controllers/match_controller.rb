@@ -88,6 +88,7 @@ class MatchController < ApplicationController
     elsif match.over?
       raise ApiError.new(:not_acceptable, "Match is over")
     end
+    match
   rescue ActiveRecord::RecordNotFound
     raise ApiError.new(:not_found)
   end
