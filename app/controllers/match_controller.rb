@@ -25,7 +25,7 @@ class MatchController < ApplicationController
     if challenge
       match_configuration.merge! challenge.match_configuration
       match_configuration.save
-      match = match_configuration.create_match(
+      match = match_configuration.matches.create(
         red_player_id: challenge.player.id,
         blue_player_id: @player.id
       )
@@ -62,7 +62,7 @@ class MatchController < ApplicationController
   def concede
     authenticate!
     match = get_match(params[:id])
-    match.create_concession(player_id: @player.id)
+    match.concessions.create(player_id: @player.id)
     render status: :accepted
     match.notify('match_over')
   end
@@ -73,7 +73,7 @@ class MatchController < ApplicationController
     if match.draw_offers.any?{ |offer| offer.player == @player}
       raise ApiError.new(:conflict, "Duplicate draw offer")
     end
-    match.create_draw_offer(player_id: @player.id)
+    match.draw_offers.create(player_id: @player.id)
     render status: :accepted
     match.notify(match.over? ? 'match over' : 'draw offer')
   end

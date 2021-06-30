@@ -9,7 +9,7 @@ class MapController < ApplicationController
 
   def submit_map
     authenticate!
-    @player.create_map(name: params[:name], data: params[:data])
+    @player.maps.create(name: params[:name], data: params[:data])
     render status: :created
   rescue ActiveRecord::RecordInvalid
     raise ApiError.new(:not_acceptable, "Invalid map")

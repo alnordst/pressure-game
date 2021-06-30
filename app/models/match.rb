@@ -93,7 +93,7 @@ class Match < ApplicationRecord
     board = Board.new(JSON.parse(states.last.data, symbolize_names: true))
     moves = states.last.moves.map{ |move| JSON.parse(move.data, symbolize_names: true) }
     board.play moves
-    create_state data: board.to_json, loser: board.loser
+    states.create data: board.to_json, loser: board.loser
   end
 
   def forecast(commands)
