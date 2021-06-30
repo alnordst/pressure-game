@@ -6,7 +6,7 @@ require_relative './units/sniper'
 require_relative './units/tank'
 
 class Square
-  attr_reader :address, :terrain, :threat, :threatened_by
+  attr_reader :address, :terrain, :threat, :threatened_by, :units
 
   def initialize(board, address, terrain: {}, unit: nil,
   threat: { red: 0, blue: 0 }, threatened_by: { red: [], blue: [] })
@@ -78,7 +78,7 @@ class Square
   end
 
   def remove(unit)
-    @units -= unit
+    @units -= [unit]
   end
 
   def neighbors(**kwargs, &test)

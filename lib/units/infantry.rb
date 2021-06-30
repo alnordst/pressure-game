@@ -16,24 +16,25 @@ class Infantry < Unit
       .each { |other_square| threaten other_square }
   end
 
-  def afterMove
+  def before_move
     super
     follower_directions = {
-      N: [:SE, :S, :SW],
-      E: [:SW, :W, :NW],
-      S: [:NW, :N, :NE],
-      W: [:NE, :E, :SE]
+      N: [:E, :S, :W],
+      E: [:S, :W, :N],
+      S: [:W, :N, :E],
+      W: [:N, :E, :S]
     }
-    if follower_directions.has_key? @command
-      @original_square
-        .neighbors(headings: follower_directions[@command], units: true)
-        .filter { |unit| unit.category == :infantry && unit.team == @team }
+    if follower_directions.has_key? command
+      square
+        .neighbors(headings: follower_directions[command], units: true)
+        .filter { |unit| unit.category == :infantry && unit.team == team }
+        .reject { |unit| unit.command }
         .each do |unit|
           unless unit.next_command
-            unit.next_command = @command
+            unit.next_command = command
           else
             directions = [:NW, :N, :NE, :E, :SE, :S, :SW, :W]
-            i = directions.index(@command)
+            i = directions.index(command)
             j = directions.index(unit.next_command)
 
             offset = lambda do |positions_clockwise|

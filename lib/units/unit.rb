@@ -6,7 +6,8 @@ class Unit
     :category, :type, :original_square, :command, :next_command
 
   def initialize(square, team:, command: nil)
-    @square = @original_square = square
+    @square = square
+    @original_square = square
     @team = Team.new team
     raise 'invalid team' unless @team
     @command = command
@@ -68,13 +69,14 @@ class Unit
 
   def move_to destination_square
     square.remove self
-    square = destination_square
+    @square = destination_square
     square.add self
     @moved = true
   end
 
   def command= command
-    @command = command if valid_commands.include? command
+    sym = command.upcase.to_sym
+    @command = sym if valid_commands.include? sym
   end
 
   def next_command= command
@@ -91,6 +93,7 @@ class Unit
         .neighbors(headings: [command])
         .first
       move_to(destination_square) if destination_square.terrain.passable?
+      @command = nil
     end
   end
 
@@ -99,20 +102,18 @@ class Unit
   def before_resolve; end
 
   def rebound
-    square.remove self
-    square = original_square
-    square.add self
-    must_rebound = false
+    move_to original_square unless square == original_square
+    @must_rebound = false
   end
 
   def set_next_command
-    command, next_command = next_command, nil
+    @command, @next_command = next_command, nil
   end
 
   def assign_threat; end
 
   def reset
-    threatens = []
-    offense_modifier, defense_modifier = 0
+    @threatens = []
+    @offense_modifier = @defense_modifier = 0
   end
 end

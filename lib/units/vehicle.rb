@@ -10,6 +10,6 @@ class Vehicle < Unit
   # vehicles continue rolling unless move failed or moved to obstructed terrain
   def move
     super
-    next_command = command if moved? && !square.terrain.obstructed?
+    @next_command = command if moved? && !square.terrain.obstructs?
   end
 end

@@ -1,3 +1,4 @@
+require 'board'
 require 'httparty'
 
 class Match < ApplicationRecord
@@ -77,26 +78,26 @@ class Match < ApplicationRecord
   end
 
   def submit_move(player:, commands:)
-    board = Board.new(JSON.parse(states.last.data))
+    board = Board.new(JSON.parse(states.last.data, symbolize_names: true))
     if board.commands_valid? team: team_of(player), commands: commands
       existing_move = states.last.moves.find_by player_id: player.id
       if existing_move
         existing_move.data = commands.to_json
       else
-        states.last.create_move player_id: player.id, data: commands.to_json
+        states.last.moves.create player_id: player.id, data: commands.to_json
       end
     end
   end
 
   def execute_turn
-    board = Board.new(JSON.parse(states.last.data))
-    moves = states.last.moves.map{ |move| JSON.parse(move.data) }
+    board = Board.new(JSON.parse(states.last.data, symbolize_names: true))
+    moves = states.last.moves.map{ |move| JSON.parse(move.data, symbolize_names: true) }
     board.play moves
     create_state data: board.to_json, loser: board.loser
   end
 
   def forecast(commands)
-    board = Board.new(JSON.parse(states.last.data))
+    board = Board.new(JSON.parse(states.last.data, symbolize_names: true))
     board.play(commands)
     { data: board.to_json, loser: board.loser }
   end

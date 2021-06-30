@@ -60,10 +60,14 @@ class Board
 
   def neighbors_of(square, headings:, iterations: 1, units: false,
   rotate: false, inclusive: false, &test)
-    h = rotate ? Address.rotate(headings) : headings
+    h = if rotate
+      Address.rotate(headings)
+    else
+      headings.map{ |heading| Address.process_heading(heading) }
+    end
     squares = h.each.with_object([]) do |heading, squares|
       iterations.times do |distance|
-        address = square.address.go_in heading, distance
+        address = square.address.go_in heading, (distance + 1)
         destination = square_at address
         break unless destination
         passed = test ? test.(destination) : true
@@ -82,20 +86,20 @@ class Board
     otherwise_valid = commands.all? do |command|
       square = square_at command[:address]
       square.unit &&
-      square.unit.team == team.to_sym &&
-      square.unit.valid_commands.include?(command[:value])
+        square.unit.team.to_sym == team.to_sym &&
+        square.unit.valid_commands.include?(command[:direction].upcase.to_sym)
     end
     no_dup_addresses && otherwise_valid
   end
 
   def play(commands)
     commands.each do |command|
-      square_at(command[:address]).unit&.command = command[:value]
+      square_at(command[:address]).unit&.command = command[:direction]
     end
-    @move
-    @resolve
-    @set_next_command
-    @assign_threat
+    move
+    resolve
+    set_next_command
+    assign_threat
   end
 
   def move

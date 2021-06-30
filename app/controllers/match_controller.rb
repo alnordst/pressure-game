@@ -33,7 +33,6 @@ class MatchController < ApplicationController
       render json: match.expanded, status: :created
     else
       match_configuration.save
-      puts 'match config', match_configuration.to_json
       @player.challenges.create(match_configuration_id: match_configuration.id)
       render status: :accepted
     end
@@ -44,7 +43,7 @@ class MatchController < ApplicationController
     match = get_match(params[:id])
     if match.submit_move(player: @player, commands: params[:commands])
       render status: :accepted
-      if !match.turn_progression && match.states.last.moves.count >= 2
+      if !match.match_configuration.turn_progression && match.states.last.moves.count >= 2
         match.execute_turn
         match.notify(match.over? ? 'match over' : 'next turn')
       end
