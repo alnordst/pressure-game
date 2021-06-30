@@ -9,7 +9,7 @@ class MatchController < ApplicationController
 
   def find_match
     authenticate!
-    match_configuration = MatchConfiguration.new params[:match_configuration]
+    match_configuration = MatchConfiguration.new(params[:match_configuration].to_unsafe_hash)
 
     if @player.challenges.any? do |c|
       c.match_configuration.equivalent_to?(match_configuration) &&
