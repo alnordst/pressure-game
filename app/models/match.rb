@@ -10,10 +10,6 @@ class Match < ApplicationRecord
   has_many :concessions, dependent: :destroy
   scope :with_player, ->(id) { where('red_player_id = ? or blue_player_id = ?', id, id)}
 
-  before_create do
-    match_configuration.map ||= Map.random
-  end
-
   after_create do
     map_data = JSON.parse(match_configuration.map.data, symbolize_names: true)
     board = Board.new map_data
@@ -91,7 +87,9 @@ class Match < ApplicationRecord
 
   def execute_turn
     board = Board.new(JSON.parse(states.last.data, symbolize_names: true))
-    moves = states.last.moves.map{ |move| JSON.parse(move.data, symbolize_names: true) }
+    moves = states.last.moves
+      .map{ |move| JSON.parse(move.data, symbolize_names: true) }
+      .flatten(1)
     board.play moves
     states.create data: board.to_json, loser: board.loser
   end

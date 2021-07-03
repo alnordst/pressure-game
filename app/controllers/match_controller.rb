@@ -25,7 +25,7 @@ class MatchController < ApplicationController
     if challenge
       match_configuration.merge! challenge.match_configuration
       match_configuration.save
-      match = match_configuration.matches.create(
+      match = match_configuration.create_match(
         red_player_id: challenge.player.id,
         blue_player_id: @player.id
       )
